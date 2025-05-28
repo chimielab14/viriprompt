@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fact-Check & Verification Prompt</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0; padding: 0;
+    color: #1D3557;
+  }
+  header {
+    background-color: #1D3557;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  header h1 {
+    margin: 0;
+    font-size: 2em;
+  }
+  header p {
+    margin-top: 5px;
+    font-size: 1em;
+  }
+  main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+  section {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 700;
+    font-size: 1.1em;
+  }
+  textarea {
+    width: 100%;
+    min-height: 130px;
+    padding: 10px;
+    font-size: 1em;
+    border-radius: 10px;
+    border: 1.5px solid #457B9D;
+    resize: vertical;
+    font-family: 'Tajawal', sans-serif;
+    color: #1D3557;
+  }
+  .file-upload {
+    margin-top: 8px;
+  }
+  .file-btn {
+    background-color: #2A9D8F;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .file-btn:hover {
+    background-color: #23867a;
+  }
+  .file-name {
+    display: inline-block;
+    margin-left: 12px;
+    padding: 5px 12px;
+    background-color: #EAEAEA;
+    border-radius: 12px;
+    font-weight: 700;
+    color: #E63946;
+    vertical-align: middle;
+    max-width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .prompt-area {
+    background-color: white;
+    margin: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    white-space: pre-wrap;
+    font-size: 1em;
+    color: #1D3557;
+    line-height: 1.4;
+    min-height: 320px;
+  }
+  .actions {
+    text-align: center;
+    margin: 10px 0 30px 0;
+  }
+  .actions button {
+    background-color: #7209B7;
+    color: white;
+    padding: 10px 22px;
+    margin: 10px 15px;
+    border-radius: 12px;
+    border: none;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .actions button:hover {
+    background-color: #5a078f;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Fact-Check & Verification Prompt</h1>
+    <p>Designed by Mr. May Abdelghani</p>
+  </header>
+  <main>
+    <section>
+      <h2>Purpose</h2>
+      <p>
+        Act like a professional fact-checker and content verifier with expertise in cross-referencing textual claims. Your task is to verify whether the statements in a given paragraph are supported by a specified source, and provide structured feedback.
+      </p>
+      <h3>Objective</h3>
+      <p>
+        Examine each statement in the provided paragraph and verify if it is supported by the content of the referenced source. Organize findings in a structured table including your opinion and reasoning.
+      </p>
+      <h3>Step-by-Step Instructions</h3>
+      <ol>
+        <li>Input the paragraph to verify in the left field.</li>
+        <li>Click "Enter Source File" to select the source document.</li>
+        <li>The selected file name will appear below the button and in the prompt.</li>
+        <li>Copy the generated prompt for your chatbot or assistant.</li>
+      </ol>
+    </section>
+    <section>
+      <label for="statementInput">Enter Paragraph / Statement:</label>
+      <textarea id="statementInput" placeholder="Type or paste the paragraph to verify here..."></textarea>
+      <div class="file-upload">
+        <input type="file" id="sourceFile" hidden accept=".pdf,.doc,.docx,.txt" />
+        <button class="file-btn" onclick="document.getElementById('sourceFile').click()">📁 Enter Source File</button>
+        <span id="sourceFileName" class="file-name"></span>
+      </div>
+    </section>
+  </main>
+  <div class="prompt-area" id="promptOutput"></div>
+  <div class="actions">
+    <button onclick="copyPrompt()">📋 Copy Prompt</button>
+    <button onclick="resetPrompt()">♻️ Reset</button>
+  </div>
+
+<script>
+  const promptTemplate = `Act like a professional fact-checker and content verifier with expertise in cross-referencing textual claims. Your task is to verify whether the statements in a given paragraph are supported by a specified source. After verifying each statement, provide your opinion on whether the source can be considered reliable for the information, along with a reason for your decision.
+
+Objective:
+Examine each statement in the provided paragraph and verify if it is supported by the content of the referenced source. Organize the findings in a structured table and include an additional column to provide your opinion and reasoning for each statement.
+
+Step-by-Step Instructions:
+
+1. Input Parsing:
+   - The paragraph to be verified will be provided enclosed in triple quotes (\`\`\`).
+   - The source document will be provided as a PDF file (e.g., \`source.pdf\`).
+
+2. Statement Identification:
+   - Break the provided paragraph into individual sentences or statements.
+   - Extract the key idea or claim from each sentence.
+
+3. Source Analysis:
+   - Read and analyze the content of the source document.
+   - Locate the paragraph(s) in the source document that either support or contradict each extracted statement.
+
+4. Verification:
+   - For each statement, determine if it is explicitly or indirectly supported by the source. If supported, include the relevant paragraph(s) from the source in the table. 
+   - If not supported, write "No relevant paragraph found."
+
+5. Provide Opinion:
+   - After verification, give your opinion on whether the source can be considered reliable for supporting the information in the statement.
+   - Include the reason for your decision (e.g., the source directly aligns with the statement, provides partial support, contradicts the statement, or lacks any relevant information).
+
+6. Output Formatting:
+   - Present the results in a table with the following columns:
+     - Column 1: The statement from the provided paragraph.
+     - Column 2: The paragraph(s) from the source that address or relate to the statement.
+     - Column 3: Your opinion on whether the source can be considered reliable for the statement and the reason for your decision.
+
+Input:
+Paragraph:
+\`\`\`
+[ENTERED_STATEMENT]
+\`\`\`
+Source: \`[ENTERED_SOURCE]\``;
+
+  let enteredStatement = "";
+  let enteredSource = "";
+
+  const statementInput = document.getElementById("statementInput");
+  const sourceFileInput = document.getElementById("sourceFile");
+  const sourceFileNameSpan = document.getElementById("sourceFileName");
+  const promptOutput = document.getElementById("promptOutput");
+
+  statementInput.addEventListener("input", () => {
+    enteredStatement = statementInput.value.trim();
+    updatePrompt();
+  });
+
+  sourceFileInput.addEventListener("change", (e) => {
+    if (e.target.files.length > 0) {
+      enteredSource = e.target.files[0].name;
+      sourceFileNameSpan.textContent = enteredSource;
+      updatePrompt();
+    }
+  });
+
+  function updatePrompt() {
+    const statementText = enteredStatement ? enteredStatement : "[enter the statement]";
+    const sourceText = enteredSource ? enteredSource : "[enter the Source]";
+    const promptText = promptTemplate
+      .replace("[ENTERED_STATEMENT]", statementText)
+      .replace("[ENTERED_SOURCE]", sourceText);
+    promptOutput.textContent = promptText;
+  }
+
+  function copyPrompt() {
+    navigator.clipboard.writeText(promptOutput.textContent);
+  }
+
+  function resetPrompt() {
+    enteredStatement = "";
+    enteredSource = "";
+    statementInput.value = "";
+    sourceFileNameSpan.textContent = "";
+    updatePrompt();
+  }
+
+  updatePrompt();
+</script>
+</body>
+</html>
